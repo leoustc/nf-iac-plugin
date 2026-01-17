@@ -14,23 +14,23 @@ NF IAC is a Nextflow executor that provisions and destroys compute through Terra
 
 ## Features
 
-### Infrastructure-as-Code Executor
-	•	Provisions compute resources dynamically using Terraform
-	•	No pre-existing cluster or scheduler required
-	•	Infrastructure lifecycle is bound to the workflow run
-	•	Automatic teardown after completion or failure
-	•	Supports ephemeral CPU and GPU workloads
+### - **Infrastructure-as-Code Executor
+- Provisions compute resources dynamically using Terraform
+- No pre-existing cluster or scheduler required
+- Infrastructure lifecycle is bound to the workflow run
+- Automatic teardown after completion or failure
+- Supports ephemeral CPU and GPU workloads
 
-### Multi-Endpoint S3 Support (No Vendor Lock-In)
-	•	Supports multiple S3-compatible endpoints within a single workflow
-	•	Buckets are routed to endpoints independently
-	•	Enables mixing AWS S3, OCI Object Storage, MinIO, or other S3-compatible services
-	•	Eliminates object-storage vendor lock-in without changing pipelines
+### - **Multi-Endpoint S3 Support (No Vendor Lock-In)
+- Supports multiple S3-compatible endpoints within a single workflow
+- Buckets are routed to endpoints independently
+- Enables mixing AWS S3, OCI Object Storage, MinIO, or other S3-compatible services
+- Eliminates object-storage vendor lock-in without changing pipelines
 
-### Object-Storage-First Execution Model
-	•	Designed for object storage from day one
-	•	No shared POSIX filesystem or NFS required
-	•	Compatible with fully ephemeral cloud environments
+### - **Object-Storage-First Execution Model
+- Designed for object storage from day one
+- No shared POSIX filesystem or NFS required
+- Compatible with fully ephemeral cloud environments
 
 
 ## Why use NF IAC?
