@@ -47,10 +47,9 @@ NF IAC is a Nextflow executor that provisions and destroys compute through Terra
 - S3-compatible storage credentials when using an object-store workDir or staged inputs
 
 ## Quick start
-Install locally and run any pipeline with the IAC executor:
+Run any pipeline with the IAC executor:
 
 ```bash
-make install
 nextflow run hello \
   -plugins nf-iac@0.1.0 \
   -process.executor iac \
@@ -61,9 +60,16 @@ nextflow run hello \
 Add the executor and IAC block to your `nextflow.config`:
 
 ```groovy
+
+plugins {
+  id 'nf-iac@0.1.0'
+  id 'nf-amazon@3.4.1'
+}
+
 process {
   executor = 'iac'
 }
+
 workDir = 's3://my-bucket/nf-work/demo'
 
 iac {
