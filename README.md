@@ -1,18 +1,32 @@
-# NF IAC plugin
+# NF-IAC plugin
 
 > Infrastructure-as-Code executor for Nextflow. Provision with Terraform, run anywhere, tear it all down when done.
 
-Current version
+```bash
+███╗   ██╗███████╗    ██╗ █████╗  ██████╗
+████╗  ██║██╔════╝    ██║██╔══██╗██╔════╝
+██╔██╗ ██║█████╗      ██║███████║██║     
+██║╚██╗██║██╔══╝      ██║██╔══██║██║     
+██║ ╚████║██║         ██║██║  ██║╚██████╗
+╚═╝  ╚═══╝╚═╝         ╚═╝╚═╝  ╚═╝ ╚═════╝
 
-> nf-iac@0.1.0
+version: nf-iac@0.2.0
+author: leoustc
+```
+
+> current version: nf-iac@0.2.0
 
 nextflow search nf-iac
 
-https://registry.nextflow.io/plugins/nf-iac@0.1.0
+https://registry.nextflow.io/plugins/nf-iac@0.2.0
 
 NF IAC is a Nextflow executor that provisions and destroys compute through Terraform. Deploy your workloads onto any Terraform-compatible infrastructure (bundled template targets OCI) while Nextflow keeps its usual work directories and polling loop.
 
 ## Features
+
+### Per task GPU enabling
+- Use GPU as the accelerator per task, mix GPU and CPU pipeline, see below *GPU enable*
+- Support profile docker,gpu as global GPU support
 
 ### Infrastructure-as-Code Executor
 - Provisions compute resources dynamically using Terraform
@@ -100,6 +114,19 @@ aws {
   client {
     endpoint = 'https://s3.amazonaws.com'
     s3PathStyleAccess = true
+  }
+}
+```
+
+## GPU enable per task
+
+```groovy
+process {
+  executor = 'iac'
+  withName: 'BISMARK_ALIGN' {
+    accelerator = [type: 'VM.GPU.A10.1', request: 1]   // use the GPU shape from OCI as example VM.GPU.A10.1, VM.GPU.A10.2, BM.GPU.A10.4, BM.GPU4.8
+    containerOptions = '--gpus all'                    // add the GPU flag here, DO NOT add GPU flag in the profile unless all task in your pipeline is GPU compatible
+    afterScript = 'hostname >> .command.out; nvidia-smi >> .command.out' // check the .command.out to see GPU is enabled
   }
 }
 ```
