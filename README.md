@@ -11,7 +11,7 @@
 ██║ ╚████║██║          ██║██║  ██║╚██████╗
 ╚═╝  ╚═══╝╚═╝          ╚═╝╚═╝  ╚═╝ ╚═════╝
 
-NF-IAC 0.3.0
+NF-IAC 0.3.1
 Author: leoustc
 Repo: https://github.com/leoustc/nf-iac-plugin.git
 ------------------------------------------------------
@@ -21,11 +21,12 @@ IAC config:
   Subnet ID         : ocid1.subnet.oc1.ap-singapore-1.aaaaaaaa_the_subnet_id
   Image ID          : ocid1.image.oc1.ap-singapore-1.aaaaaaaa_image_id
   CPU factor        : 2
+  RAM factor        : 2
   Terraform version : Terraform v1.14.3
 
 ```
 
-> current version: nf-iac@0.3.0
+> current version: nf-iac@0.3.1
 
 nextflow search nf-iac
 
@@ -103,6 +104,9 @@ iac {
   wrapperWaitTimeout = '2 min'     // optional; wait for wrapper in workDir
   wrapperWaitInterval = '5 sec'    // optional
 
+  cpu_factor = 2   // scales task cpus to ocpus as round(cpus * cpu_factor), min 1
+  ram_factor = 2   // scales task memory to memory_gbs as round(memory_gb * ram_factor), min 1
+
   oci {
     profile     = 'DEFAULT'
     compartment = 'ocid1.compartment...'
@@ -145,16 +149,19 @@ process {
 
 ```bash
 -[nf-iac] plugin completed: task resource vs trace summary:
-Task                        CPU    LCPU   RAM(GB)  DISK(GB)    %CPU    %RSS   %VMEM   %DISK
-SEQTK_TRIM(SAMPLE2_PE)        1       2        12      1024   4.46%    0.1%    0.2%    0.7%
-SEQTK_TRIM(SAMPLE1_PE)        1       2        12      1024   4.67%    0.1%    0.2%    0.7%
-FASTQC(SAMPLE1_PE)            3       6        36      1024   4.06%    1.4%  112.0%    0.8%
-MULTIQC                       1       2         6      1024   3.30%   11.6%  201.4%    0.9%
-SEQTK_TRIM(SAMPLE3_SE)        1       2        12      1024   4.46%    0.1%    0.2%    0.7%
-FASTQC(SAMPLE3_SE)            3       6        36      1024   4.15%    1.2%  111.8%    0.8%
-FASTQC(SAMPLE2_PE)            3       6        36      1024   3.82%    1.2%  112.0%    0.8%
+Task                        CPU    LCPU   RAM(GB)  DISK(GB)  STARTTIME(min)   RUNTIME(min)    %CPU    %RSS   %VMEM   %DISK
+SEQTK_TRIM(SAMPLE2_PE)        1       2        12      1024            0.0            0.1    1038       0       0       1
+SEQTK_TRIM(SAMPLE1_PE)        1       2        12      1024            0.0            0.1    1045       0       0       1
+FASTQC(SAMPLE1_PE)            3       6        36      1024            0.0            0.1    1981       1     112       1
+MULTIQC                       1       2         6      1024            3.8            0.2     691       6     201       1
+SEQTK_TRIM(SAMPLE3_SE)        1       2        12      1024            0.0            0.1    1063       0       0       1
+FASTQC(SAMPLE3_SE)            3       6        36      1024            0.0            0.1    1909       1     112       1
+FASTQC(SAMPLE2_PE)            3       6        36      1024            0.0            0.1    1857       1     112       1
 ------------------------------------------------------
 - Goodbye!
 ```
+
+Each run also writes a persistent summary file at:
+`./.nextflow/iac/<run-id>/pipeline-resource-usage-<run-id>.txt`
 
 Review the template in `iac.config` and replace the placeholder SSH key, bucket endpoints, and OCI identifiers with your own values before running.
