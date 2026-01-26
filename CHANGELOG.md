@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.5
+- Added visualization notebook (`visualization.ipynb`).
+- Pipeline resource usage output now includes `%DISK` and preserves full precision for all `%` columns.
+
 ## 0.3.3
 - Job dir naming is now `.nextflow/iac/<run_timestamp>/<task_id>/` (jobId stays `<aa>/<hash>`).
 - Added richer resource and trace metrics, including CPU time, estimated cycles, LCPU, peak RSS/VMEM, and disk ratio.

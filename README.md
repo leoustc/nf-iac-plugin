@@ -11,7 +11,7 @@
 ██║ ╚████║██║          ██║██║  ██║╚██████╗
 ╚═╝  ╚═══╝╚═╝          ╚═╝╚═╝  ╚═╝ ╚═════╝
 
-NF-IAC 0.3.3
+NF-IAC 0.3.5
 Author: leoustc
 Repo: https://github.com/leoustc/nf-iac-plugin.git
 ------------------------------------------------------
@@ -20,29 +20,41 @@ IAC config:
   Compartment ID    : ocid1.compartment.oc1..aaaaaaaa_your_compartment_id
   Subnet ID         : ocid1.subnet.oc1.ap-singapore-1.aaaaaaaa_the_subnet_id
   Image ID          : ocid1.image.oc1.ap-singapore-1.aaaaaaaa_image_id
-  CPU factor        : 2
-  RAM factor        : 2
+  CPU factor        : 1
+  RAM factor        : 1
   Terraform version : Terraform v1.14.3
 
-Example end-of-run summary:
+.....
+
+executor >  iac (7)
+[31/b241ec] NFCORE_DEMO:DEMO:FASTQC (SAMPLE1_PE)     | 3 of 3 ✔
+[f1/cc0232] NFCORE_DEMO:DEMO:SEQTK_TRIM (SAMPLE1_PE) | 3 of 3 ✔
+[ed/dfe15b] NFCORE_DEMO:DEMO:MULTIQC                 | 1 of 1 ✔
+-[nf-core/demo] Pipeline completed successfully-
+Completed at: 26-Jan-2026 13:41:16
+Duration    : 6m 14s
+CPU hours   : (a few seconds)
+Succeeded   : 7
 
 -[nf-iac] plugin completed: task resource vs trace summary:
 Task                        CPU    LCPU   RAM(GB)  DISK(GB)  PEAK_RSS(GB)  PEAK_VMEM(GB)   %DISK   STARTTIME     RUNTIME
+FASTQC(SAMPLE2_PE)            6      12        36      1024          0.57         40.32       1         0.0         0.1
+SEQTK_TRIM(SAMPLE2_PE)        2       4        12      1024          0.01          0.02       1         0.0         0.1
 FASTQC(SAMPLE1_PE)            6      12        36      1024          0.53         40.32       1         0.0         0.1
-FASTQC(SAMPLE2_PE)            6      12        36      1024          0.51         40.32       1         0.0         0.1
-FASTQC(SAMPLE3_SE)            6      12        36      1024          0.53         40.32       1         0.0         0.1
 SEQTK_TRIM(SAMPLE1_PE)        2       4        12      1024          0.01          0.02       1         0.0         0.1
-SEQTK_TRIM(SAMPLE2_PE)        2       4        12      1024          0.01          0.02       1         0.0         0.0
+MULTIQC                       1       2         6      1024          0.69         12.08       1         2.0         0.2
 SEQTK_TRIM(SAMPLE3_SE)        2       4        12      1024          0.01          0.02       1         0.0         0.1
-MULTIQC                       1       2         6      1024          0.70         12.08       1         2.0         0.2
+FASTQC(SAMPLE3_SE)            6      12        36      1024          0.53         40.32       1         0.0         0.1
+------------------------------------------------------
+- Goodbye!
 
 ```
 
-> current version: nf-iac@0.3.3
+> current version: nf-iac@0.3.5
 
 nextflow search nf-iac
 
-https://registry.nextflow.io/plugins/nf-iac@0.2.0
+https://registry.nextflow.io/plugins/nf-iac@0.3.5
 
 NF IAC is a Nextflow executor that provisions and destroys compute through Terraform. Deploy your workloads onto any Terraform-compatible infrastructure (bundled template targets OCI) while Nextflow keeps its usual work directories and polling loop.
 
@@ -163,19 +175,23 @@ process {
 
 ```bash
 -[nf-iac] plugin completed: task resource vs trace summary:
-Task                        CPU    LCPU   RAM(GB)  DISK(GB)  STARTTIME(min)   RUNTIME(min)    %CPU    %RSS   %VMEM   %DISK
-SEQTK_TRIM(SAMPLE2_PE)        1       2        12      1024            0.0            0.1    1038       0       0       1
-SEQTK_TRIM(SAMPLE1_PE)        1       2        12      1024            0.0            0.1    1045       0       0       1
-FASTQC(SAMPLE1_PE)            3       6        36      1024            0.0            0.1    1981       1     112       1
-MULTIQC                       1       2         6      1024            3.8            0.2     691       6     201       1
-SEQTK_TRIM(SAMPLE3_SE)        1       2        12      1024            0.0            0.1    1063       0       0       1
-FASTQC(SAMPLE3_SE)            3       6        36      1024            0.0            0.1    1909       1     112       1
-FASTQC(SAMPLE2_PE)            3       6        36      1024            0.0            0.1    1857       1     112       1
+Task                        CPU    LCPU   RAM(GB)  DISK(GB)  PEAK_RSS(GB)  PEAK_VMEM(GB)   %DISK   STARTTIME     RUNTIME
+FASTQC(SAMPLE2_PE)            6      12        36      1024          0.57         40.32       1         0.0         0.1
+SEQTK_TRIM(SAMPLE2_PE)        2       4        12      1024          0.01          0.02       1         0.0         0.1
+FASTQC(SAMPLE1_PE)            6      12        36      1024          0.53         40.32       1         0.0         0.1
+SEQTK_TRIM(SAMPLE1_PE)        2       4        12      1024          0.01          0.02       1         0.0         0.1
+MULTIQC                       1       2         6      1024          0.69         12.08       1         2.0         0.2
+SEQTK_TRIM(SAMPLE3_SE)        2       4        12      1024          0.01          0.02       1         0.0         0.1
+FASTQC(SAMPLE3_SE)            6      12        36      1024          0.53         40.32       1         0.0         0.1
 ------------------------------------------------------
 - Goodbye!
 ```
 
 Each run also writes a persistent summary file at:
 `./.nextflow/iac/<run-id>/pipeline-resource-usage-<run-id>.txt`
+
+## Visualization notebook
+Use the bundled notebook to visualize pipeline resource usage:
+`visualization.ipynb`
 
 Review the template in `iac.config` and replace the placeholder SSH key, bucket endpoints, and OCI identifiers with your own values before running.
