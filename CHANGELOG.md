@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.3
+- Job dir naming is now `.nextflow/iac/<run_timestamp>/<task_id>/` (jobId stays `<aa>/<hash>`).
+- Added richer resource and trace metrics, including CPU time, estimated cycles, LCPU, peak RSS/VMEM, and disk ratio.
+- Added per-run resource and trace usage files and a concise end-of-run summary table.
+
 ## 0.3.1
 - Added `ram_factor` and moved `cpu_factor`/`ram_factor` to `iac {}`.
 - Updated resource summary to include start time and runtime, and to use trace `%CPU` directly.

@@ -11,7 +11,7 @@
 ██║ ╚████║██║          ██║██║  ██║╚██████╗
 ╚═╝  ╚═══╝╚═╝          ╚═╝╚═╝  ╚═╝ ╚═════╝
 
-NF-IAC 0.3.1
+NF-IAC 0.3.3
 Author: leoustc
 Repo: https://github.com/leoustc/nf-iac-plugin.git
 ------------------------------------------------------
@@ -24,9 +24,21 @@ IAC config:
   RAM factor        : 2
   Terraform version : Terraform v1.14.3
 
+Example end-of-run summary:
+
+-[nf-iac] plugin completed: task resource vs trace summary:
+Task                        CPU    LCPU   RAM(GB)  DISK(GB)  PEAK_RSS(GB)  PEAK_VMEM(GB)   %DISK   STARTTIME     RUNTIME
+FASTQC(SAMPLE1_PE)            6      12        36      1024          0.53         40.32       1         0.0         0.1
+FASTQC(SAMPLE2_PE)            6      12        36      1024          0.51         40.32       1         0.0         0.1
+FASTQC(SAMPLE3_SE)            6      12        36      1024          0.53         40.32       1         0.0         0.1
+SEQTK_TRIM(SAMPLE1_PE)        2       4        12      1024          0.01          0.02       1         0.0         0.1
+SEQTK_TRIM(SAMPLE2_PE)        2       4        12      1024          0.01          0.02       1         0.0         0.0
+SEQTK_TRIM(SAMPLE3_SE)        2       4        12      1024          0.01          0.02       1         0.0         0.1
+MULTIQC                       1       2         6      1024          0.70         12.08       1         2.0         0.2
+
 ```
 
-> current version: nf-iac@0.3.1
+> current version: nf-iac@0.3.3
 
 nextflow search nf-iac
 
@@ -52,6 +64,8 @@ NF IAC is a Nextflow executor that provisions and destroys compute through Terra
 - Buckets are routed to endpoints independently
 - Enables mixing AWS S3, OCI Object Storage, MinIO, or other S3-compatible services
 - Eliminates object-storage vendor lock-in without changing pipelines
+
+**Notice:** When using multiple S3 endpoints, create placeholder files in the main AWS bucket to satisfy Nextflow's input file sanity checks (this will be improved in a future release).
 
 ### Object-Storage-First Execution Model
 - Designed for object storage from day one
@@ -104,8 +118,8 @@ iac {
   wrapperWaitTimeout = '2 min'     // optional; wait for wrapper in workDir
   wrapperWaitInterval = '5 sec'    // optional
 
-  cpu_factor = 2   // scales task cpus to ocpus as round(cpus * cpu_factor), min 1
-  ram_factor = 2   // scales task memory to memory_gbs as round(memory_gb * ram_factor), min 1
+  cpu_factor = 2   // scales task cpus to ocpus as ceil(cpus / cpu_factor), min 1
+  ram_factor = 2   // reserved for future memory scaling (currently informational)
 
   oci {
     profile     = 'DEFAULT'
