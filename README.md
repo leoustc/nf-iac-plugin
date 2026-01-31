@@ -11,7 +11,7 @@
 ██║ ╚████║██║          ██║██║  ██║╚██████╗
 ╚═╝  ╚═══╝╚═╝          ╚═╝╚═╝  ╚═╝ ╚═════╝
 
-NF-IAC 0.3.5
+NF-IAC 1.0.0
 Author: leoustc
 Repo: https://github.com/leoustc/nf-iac-plugin.git
 ------------------------------------------------------
@@ -50,15 +50,21 @@ FASTQC(SAMPLE3_SE)            6      12        36      1024          0.53       
 
 ```
 
-> current version: nf-iac@0.3.5
+> current version: nf-iac@1.0.0
 
 nextflow search nf-iac
 
-https://registry.nextflow.io/plugins/nf-iac@0.3.5
+https://registry.nextflow.io/plugins/nf-iac@1.0.0
 
 NF IAC is a Nextflow executor that provisions and destroys compute through Terraform. Deploy your workloads onto any Terraform-compatible infrastructure (bundled template targets OCI) while Nextflow keeps its usual work directories and polling loop.
 
 ## Features
+
+### Task-level image override
+- Real heterogeneous computing in one Nextflow run: mix x86, ARM, and GPU hosts with task-level `image`
+- Match host images to hardware (x86 image for x86 shapes, ARM image for ARM shapes, GPU image for GPU shapes)
+- Shape selection priority: `accelerator.type` > `ext.shape` > `iac.oci.defaultShape`
+- Go global by overriding `profile`, `compartment`, and `subnet` per task—your pipeline becomes truly distributed and can target the best resources available
 
 ### Per task GPU enabling
 - Use GPU as the accelerator per task, mix GPU and CPU pipeline, see below *GPU enable*
@@ -103,7 +109,7 @@ Run any pipeline with the IAC executor:
 
 ```bash
 nextflow run hello \
-  -plugins nf-iac@0.1.0 \
+  -plugins nf-iac@1.0.0 \
   -process.executor iac \
   -work-dir s3://my-bucket/nf-work/hello
 ```
@@ -114,7 +120,7 @@ Add the executor and IAC block to your `nextflow.config`:
 ```groovy
 
 plugins {
-  id 'nf-iac@0.1.0'
+  id 'nf-iac@1.0.0'
   id 'nf-amazon@3.4.1'
 }
 
@@ -146,6 +152,38 @@ iac {
   storage = [
     [bucket: 'my-bucket', region: 'us-east-1', accessKey: 'xxx', secretKey: 'yyy', endpoint: 'https://s3.amazonaws.com']
   ]
+}
+
+process {
+  // Heterogeneous compute (shape/image matching)
+  withName: 'TASK_ARM' {
+    ext.shape = '1 VM.Standard.A1.Flex'
+    ext.image = 'ocid1.image.oc1..arm_image'
+  }
+  withName: 'TASK_X86' {
+    ext.shape = '1 VM.Standard.E4.Flex'
+    ext.image = 'ocid1.image.oc1..x86_image'
+  }
+  withName: 'TASK_GPU' {
+    ext.shape = '1 VM.GPU.A10.1'
+    ext.image = 'ocid1.image.oc1..gpu_image'
+  }
+
+  // Global distribution (region/account/network overrides)
+  withName: 'TASK_SINGAPORE' {
+    ext.profile = 'SG_PROFILE'
+    ext.compartment = 'ocid1.compartment.oc1..sg_compartment'
+    ext.subnet = 'ocid1.subnet.oc1..sg_subnet'
+    ext.shape = '1 VM.Standard.E4.Flex'
+    ext.image = 'ocid1.image.oc1..sg_image'
+  }
+  withName: 'TASK_SANJOSE' {
+    ext.profile = 'SJ_PROFILE'
+    ext.compartment = 'ocid1.compartment.oc1..sj_compartment'
+    ext.subnet = 'ocid1.subnet.oc1..sj_subnet'
+    ext.shape = '1 VM.Standard.E4.Flex'
+    ext.image = 'ocid1.image.oc1..sj_image'
+  }
 }
 
 aws {
