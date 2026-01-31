@@ -232,4 +232,4 @@ Each run also writes a persistent summary file at:
 Use the bundled notebook to visualize pipeline resource usage:
 `visualization.ipynb`
 
-Review the template in `iac.config` and replace the placeholder SSH key, bucket endpoints, and OCI identifiers with your own values before running.
+Review the template in `iac.conf` and replace the placeholder SSH key, bucket endpoints, and OCI identifiers with your own values before running.
