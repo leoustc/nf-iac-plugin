@@ -11,7 +11,7 @@
 ██║ ╚████║██║          ██║██║  ██║╚██████╗
 ╚═╝  ╚═══╝╚═╝          ╚═╝╚═╝  ╚═╝ ╚═════╝
 
-NF-IAC 1.0.0
+NF-IAC 1.0.2
 Author: leoustc
 Repo: https://github.com/leoustc/nf-iac-plugin.git
 ------------------------------------------------------
@@ -50,11 +50,11 @@ FASTQC(SAMPLE3_SE)            6      12        36      1024          0.53       
 
 ```
 
-> current version: nf-iac@1.0.0
+> current version: nf-iac@1.0.2
 
 nextflow search nf-iac
 
-https://registry.nextflow.io/plugins/nf-iac@1.0.0
+https://registry.nextflow.io/plugins/nf-iac@1.0.2
 
 NF IAC is a Nextflow executor that provisions and destroys compute through Terraform. Deploy your workloads onto any Terraform-compatible infrastructure (bundled template targets OCI) while Nextflow keeps its usual work directories and polling loop.
 
@@ -103,6 +103,7 @@ NF IAC is a Nextflow executor that provisions and destroys compute through Terra
 - Terraform 1.0+ available on the host that launches tasks
 - OCI credentials/profile for the target compartment/subnet/image (current template); SSH public key to access nodes if needed
 - S3-compatible storage credentials when using an object-store workDir or staged inputs
+- `rclone` on worker nodes (auto-installed in `nxf_work.sh` if missing; uses apt or the official install script)
 
 ## Quick start
 Run any pipeline with the IAC executor:
@@ -231,5 +232,9 @@ Each run also writes a persistent summary file at:
 ## Visualization notebook
 Use the bundled notebook to visualize pipeline resource usage:
 `visualization.ipynb`
+
+## Rclone details
+- Config written to `/etc/rclone/rclone.conf` (falls back to `$HOME/.rclone.conf` if `/etc` is not writable).
+- Object-store paths use `bucket:bucket/path` (e.g. `nf-data:nf-data/work-demo/...`).
 
 Review the template in `iac.conf` and replace the placeholder SSH key, bucket endpoints, and OCI identifiers with your own values before running.
