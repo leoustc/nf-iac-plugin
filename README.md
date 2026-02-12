@@ -110,7 +110,7 @@ Run any pipeline with the IAC executor:
 
 ```bash
 nextflow run hello \
-  -plugins nf-iac@1.0.0 \
+  -plugins nf-iac@1.0.2 \
   -process.executor iac \
   -work-dir s3://my-bucket/nf-work/hello
 ```
@@ -121,7 +121,7 @@ Add the executor and IAC block to your `nextflow.config`:
 ```groovy
 
 plugins {
-  id 'nf-iac@1.0.0'
+  id 'nf-iac@1.0.2'
   id 'nf-amazon@3.4.1'
 }
 
@@ -137,8 +137,8 @@ iac {
   wrapperWaitTimeout = '2 min'     // optional; wait for wrapper in workDir
   wrapperWaitInterval = '5 sec'    // optional
 
-  cpu_factor = 2   // scales task cpus to ocpus as ceil(cpus / cpu_factor), min 1
-  ram_factor = 2   // reserved for future memory scaling (currently informational)
+  cpu_factor = 2   // scales task cpus to ocpus as round(cpus * cpu_factor), min 1
+  ram_factor = 2   // scales task memory_gb to memory_gbs as round(memory_gb * ram_factor), min 1
 
   oci {
     profile     = 'DEFAULT'
@@ -149,7 +149,7 @@ iac {
     defaultDisk  = '1024 GB'
   }
 
-  // Optional per-bucket credentials used inside the worker for S3 sync/cp
+  // Optional per-bucket credentials used inside the worker for rclone object-store sync/copy
   storage = [
     [bucket: 'my-bucket', region: 'us-east-1', accessKey: 'xxx', secretKey: 'yyy', endpoint: 'https://s3.amazonaws.com']
   ]
@@ -234,7 +234,9 @@ Use the bundled notebook to visualize pipeline resource usage:
 `visualization.ipynb`
 
 ## Rclone details
-- Config written to `/etc/rclone/rclone.conf` (falls back to `$HOME/.rclone.conf` if `/etc` is not writable).
+- Config written to `/etc/rclone/rclone.conf` (no `$HOME` fallback).
 - Object-store paths use `bucket:bucket/path` (e.g. `nf-data:nf-data/work-demo/...`).
+- Input resolution: directory inputs use `rclone sync`; file inputs use `rclone copyto`.
+- `send_exitcode` uploads `.command.out`, `.command.err`, `.command.trace`, `.command.log`, `.nxf.log`, `.exitcode` and exits `0` (best effort).
 
 Review the template in `iac.conf` and replace the placeholder SSH key, bucket endpoints, and OCI identifiers with your own values before running.
